@@ -1,0 +1,6 @@
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0062.jpg 196,68,348,244,1 479,44,607,196,1 754,20,889,211,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0064.jpg 332,89,627,450,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0110.jpg 118,28,333,349,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0432.jpg 151,8,433,363,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0464.jpg 321,83,455,286,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0497.jpg 241,7,496,324,1 665,116,820,309,1
