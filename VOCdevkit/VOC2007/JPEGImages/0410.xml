@@ -1,26 +1,26 @@
-<?xml version="1.0" ?><annotation>
-	<folder>JPEGImages</folder>
+<annotation>
+	<folder>image_nomask</folder>
 	<filename>0410.jpg</filename>
-	<path>F:/AI/MaskRecognition/yolo3/mask/data/JPEGImages/0410.jpg</path>
+	<path>/home/hamlin/Study/Deep Learning/mask/dataset/image_nomask/0410.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
 	<size>
-		<width>960</width>
-		<height>540</height>
+		<width>1024</width>
+		<height>1539</height>
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
 	<object>
-		<name>have_mask</name>
+		<name>no_mask</name>
 		<pose>Unspecified</pose>
-		<truncated>1</truncated>
+		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>229</xmin>
-			<ymin>1</ymin>
-			<xmax>474</xmax>
-			<ymax>276</ymax>
+			<xmin>168</xmin>
+			<ymin>123</ymin>
+			<xmax>703</xmax>
+			<ymax>855</ymax>
 		</bndbox>
 	</object>
 </annotation>

@@ -1,26 +1,26 @@
 <?xml version="1.0" ?><annotation>
 	<folder>JPEGImages</folder>
 	<filename>0357.jpg</filename>
-	<path>F:/AI/MaskRecognition/yolo3/mask/data/JPEGImages/0357.jpg</path>
+	<path>F:/AI/MaskRecognition/yolo3/yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0357.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
 	<size>
-		<width>960</width>
-		<height>540</height>
+		<width>1024</width>
+		<height>1833</height>
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
 	<object>
-		<name>have_mask</name>
+		<name>no_mask</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>513</xmin>
-			<ymin>93</ymin>
-			<xmax>765</xmax>
-			<ymax>422</ymax>
+			<xmin>140</xmin>
+			<ymin>27</ymin>
+			<xmax>864</xmax>
+			<ymax>1027</ymax>
 		</bndbox>
 	</object>
 </annotation>

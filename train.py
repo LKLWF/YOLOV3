@@ -3,6 +3,9 @@ Retrain the YOLO model for your own dataset.
 """
 
 import numpy as np
+import pandas as pd
+import os
+import matplotlib.pyplot as plt
 import keras.backend as K
 from keras.layers import Input, Lambda
 from keras.models import Model
@@ -33,8 +36,13 @@ def _main():
             freeze_body=2, weights_path='model_data/yolo.h5') # make sure you know what you freeze
 
     logging = TensorBoard(log_dir=log_dir)
-    checkpoint = ModelCheckpoint(log_dir + 'ep{epoch:03d}-loss{loss:.3f}-val_loss{val_loss:.3f}.h5',
-        monitor='val_loss', save_weights_only=True, save_best_only=True, period=3)
+    checkpoint = ModelCheckpoint(
+        log_dir + 'ep{epoch:03d}-loss{loss:.3f}-val_loss{val_loss:.3f}.h5',
+        monitor='val_loss',
+        save_weights_only=True, #只保存模型权重，否则将保存整个模型
+        save_best_only=True, #s只保存在验证集上性能最好的模型
+        period=3
+    )
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=3, verbose=1)
     early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1)
 
@@ -45,25 +53,34 @@ def _main():
     np.random.shuffle(lines)
     np.random.seed(None)
     num_val = int(len(lines)*val_split)
-    num_train = len(lines) - num_val
-
+    # num_train = len(lines) - num_val
+    num_train = int(len(lines)/2)
     #Train with frozen layers first, to get a stable loss.
     #Adjust num epochs to your dataset. This step is enough to obtain a not bad model.
     if True:
-        model.compile(optimizer=Adam(lr=1e-3), loss={
-            # use custom yolo_loss Lambda layer.
-            'yolo_loss': lambda y_true, y_pred: y_pred})
+        model.compile(
+            optimizer=Adam(lr=1e-3),
+            loss={'yolo_loss': lambda y_true, y_pred: y_pred} # use custom yolo_loss Lambda layer.
+            # metrics = ['accuracy',  fmeasure, recall, precision]
+        )
 
         batch_size = 2
         print('Train on {} samples, val on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
-        model.fit_generator(data_generator_wrapper(lines[:num_train], batch_size, input_shape, anchors, num_classes),
+        hist = model.fit_generator(data_generator_wrapper(lines[:num_train], batch_size, input_shape, anchors, num_classes),
                 steps_per_epoch=max(1, num_train//batch_size),
                 validation_data=data_generator_wrapper(lines[num_train:], batch_size, input_shape, anchors, num_classes),
                 validation_steps=max(1, num_val//batch_size),
-                epochs=10,
+                epochs=4,
                 initial_epoch=0,
-                callbacks=[ checkpoint, reduce_lr, early_stopping])
-        model.save_weights(log_dir + 'trained_weights_stage_1.h5')
+                callbacks=[ checkpoint, reduce_lr, early_stopping ])
+        training_vis(hist, epochs=4)
+        # save_name = 'test1'
+        # model.save_weights(os.path.join(log_dir, save_name+'.h5'), overwrite=True)
+        # pd.DataFrame(hist.history).to_hdf(os.path.join(log_dir, 'history_'+save_name+'.h5'), key='df_')
+        
+        # model.save_weights('trained_weights_test2.h5')
+        # df_ = pd.DataFrame(hist.history)
+        # df_.to_hdf(path_or_buf = 'trained_weights_test2.h5', key='df_')
 
     #model.load_weights("logs/ep034-loss6.105-val_loss6.205.h5")
     # Unfreeze and continue training, to fine-tune.
@@ -71,19 +88,31 @@ def _main():
     if True:
         for i in range(len(model.layers)):
             model.layers[i].trainable = True
-        model.compile(optimizer=Adam(lr=1e-4), loss={'yolo_loss': lambda y_true, y_pred: y_pred}) # recompile to apply the change
+        model.compile(
+            optimizer=Adam(lr=1e-4),
+            loss={'yolo_loss': lambda y_true,y_pred: y_pred}
+            # metrics = ['accuracy',  fmeasure, recall, precision]
+        ) # recompile to apply the change
         print('Unfreeze all of the layers.')
 
         batch_size = 2 # note that more GPU memory is required after unfreezing the body
         print('Train on {} samples, val on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
-        model.fit_generator(data_generator_wrapper(lines[:num_train], batch_size, input_shape, anchors, num_classes),
+        hist = model.fit_generator(data_generator_wrapper(lines[:num_train], batch_size, input_shape, anchors, num_classes),
             steps_per_epoch=max(1, num_train//batch_size),
             validation_data=data_generator_wrapper(lines[num_train:], batch_size, input_shape, anchors, num_classes),
             validation_steps=max(1, num_val//batch_size),
-            epochs=100,
-            initial_epoch=16,
-            callbacks=[ checkpoint, reduce_lr, early_stopping])
-        model.save_weights(log_dir + 'trained_weights_final.h5')
+            epochs=10,
+            initial_epoch=4,
+            callbacks=[ checkpoint, reduce_lr, early_stopping]
+        )
+        training_vis(hist, epochs=10)
+        # model.save_weights('trained_weights_test1.h5')
+        # df_ = pd.DataFrame(hist.history)
+        # df_.to_hdf(path_or_buf = 'trained_weights_test1.h5', key='df_')
+
+        # save_name = 'test2'
+        # model.save_weights(os.path.join(log_dir, save_name+'.h5'), overwrite=True)
+        # pd.DataFrame(hist.history).to_hdf(os.path.join(log_dir, 'history_'+save_name+'.h5'), key='df_')
 
     # Further training if needed.
 
@@ -186,6 +215,67 @@ def data_generator_wrapper(annotation_lines, batch_size, input_shape, anchors, n
     n = len(annotation_lines)
     if n==0 or batch_size<=0: return None
     return data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes)
+
+def precision(y_true, y_pred):
+    # Calculates the precision
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    return precision
+
+def recall(y_true, y_pred):
+    # Calculates the recall
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
+    return recall
+
+def fbeta_score(y_true, y_pred, beta=1):
+    # Calculates the F score, the weighted harmonic mean of precision and recall.
+
+    if beta < 0:
+        raise ValueError('The lowest choosable beta is zero (only precision).')
+        
+    # If there are no true positives, fix the F score at 0 like sklearn.
+    if K.sum(K.round(K.clip(y_true, 0, 1))) == 0:
+        return 0
+
+    p = precision(y_true, y_pred)
+    r = recall(y_true, y_pred)
+    bb = beta ** 2
+    fbeta_score = (1 + bb) * (p * r) / (bb * p + r + K.epsilon())
+    return fbeta_score
+
+def fmeasure(y_true, y_pred):
+    # Calculates the f-measure, the harmonic mean of precision and recall.
+    return fbeta_score(y_true, y_pred, beta=1)
+
+# define the function
+def training_vis(hist, epochs):
+    # 画loss曲线
+    history = pd.DataFrame(hist.history)
+    max = int(history['loss'][0]) + 10
+    # min = history['loss'][epochs-1]
+    min = 0
+    plt.plot(history['loss'])
+    # 画val_loss曲线
+    plt.plot(history['val_loss'], color='blue', linewidth=5.0, linestyle='--')
+    plt.title('model loss')
+    # 坐标轴范围
+    # plt.xlim((0,6))
+    # plt.ylim((500, 4000))
+    # 坐标轴名称
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    # plt.legend(['train', 'test'], loc='upper left')
+    #设置坐标轴刻度
+    my_x_ticks = np.arange(0, epochs, 1)
+    my_y_ticks = np.arange(0, max, int(max/10))
+    plt.xticks(my_x_ticks)
+    plt.yticks(my_y_ticks)
+    plt.savefig('./results/loss_val_loss.jpg')
+    #显示出所有设置
+    # plt.show()
 
 if __name__ == '__main__':
     _main()

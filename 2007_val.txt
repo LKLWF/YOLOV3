@@ -1,6 +1,52 @@
-f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0062.jpg 196,68,348,244,1 479,44,607,196,1 754,20,889,211,1
-f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0064.jpg 332,89,627,450,1
-f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0110.jpg 118,28,333,349,1
-f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0432.jpg 151,8,433,363,1
-f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0464.jpg 321,83,455,286,1
-f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0497.jpg 241,7,496,324,1 665,116,820,309,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0010.jpg 381,38,597,305,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0011.jpg 90,109,300,347,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0059.jpg 337,11,606,358,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0060.jpg 494,81,615,207,1 138,181,216,260,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0071.jpg 273,13,612,444,1 816,242,918,394,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0073.jpg 245,63,424,266,1 629,129,720,246,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0108.jpg 280,43,531,403,1 705,299,861,495,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0112.jpg 433,21,638,266,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0118.jpg 372,171,574,462,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0119.jpg 450,78,655,369,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0134.jpg 522,102,766,375,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0143.jpg 254,90,347,215,1 648,90,756,207,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0164.jpg 412,55,607,277,1 773,173,960,442,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0166.jpg 461,77,654,331,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0181.jpg 396,56,608,325,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0184.jpg 251,74,455,340,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0188.jpg 167,108,363,326,1 543,43,773,298,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0194.jpg 406,104,478,177,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0203.jpg 328,190,395,268,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0206.jpg 414,4,643,287,1
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0223.jpg 294,98,400,218,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0225.jpg 430,121,714,433,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0241.jpg 343,170,423,264,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0246.jpg 299,31,444,215,0 544,10,699,173,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0262.jpg 211,78,869,1061,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0274.jpg 303,83,621,472,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0282.jpg 235,134,355,265,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0304.jpg 336,53,511,287,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0306.jpg 280,96,409,234,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0321.jpg 106,71,328,344,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0338.jpg 352,58,418,136,0 188,22,228,69,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0345.jpg 265,60,422,258,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0356.jpg 393,230,744,664,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0357.jpg 140,27,864,1027,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0363.jpg 327,36,706,451,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0370.jpg 290,92,417,228,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0387.jpg 345,549,909,1281,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0392.jpg 275,143,391,281,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0396.jpg 178,326,313,507,0 312,325,447,505,0 462,330,618,534,0 621,218,762,398,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0397.jpg 422,226,553,402,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0401.jpg 300,99,405,232,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0438.jpg 377,33,596,266,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0441.jpg 296,163,686,719,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0442.jpg 271,124,641,574,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0451.jpg 252,117,631,544,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0475.jpg 235,114,391,299,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0476.jpg 289,133,410,265,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0480.jpg 253,132,436,330,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0481.jpg 143,8,854,639,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0485.jpg 262,166,825,888,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0487.jpg 58,21,153,119,0 273,23,342,115,0 420,23,497,120,0 647,33,728,134,0 875,8,956,105,0
+f:\AI\MaskRecognition\yolo3\yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0495.jpg 260,162,830,826,0
