@@ -1,7 +1,7 @@
 <?xml version="1.0" ?><annotation>
 	<folder>JPEGImages</folder>
 	<filename>0043.jpg</filename>
-	<path>F:/AI/MaskRecognition/yolo3/yolov3_keras/VOCdevkit/VOC2007/JPEGImages/0043.jpg</path>
+	<path>F:/AI/MaskRecognition/yolo3/mask/data/JPEGImages/0043.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>

@@ -1,0 +1,26 @@
+<?xml version="1.0" ?><annotation>
+	<folder>JPEGImages</folder>
+	<filename>0915.jpg</filename>
+	<path>F:/AI/MaskRecognition/yolo3/mask/data/JPEGImages/0915.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>640</width>
+		<height>480</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>no_mask</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>300</xmin>
+			<ymin>99</ymin>
+			<xmax>405</xmax>
+			<ymax>232</ymax>
+		</bndbox>
+	</object>
+</annotation>
