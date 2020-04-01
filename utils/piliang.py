@@ -3,7 +3,7 @@
 import os
 import os.path
 import xml.dom.minidom
-path="F:/AI/MaskRecognition/yolo3/yolov3_keras/VOCdevkit/VOC2007/Annotations"
+path="F:\AI\MaskRecognition\yolo3\yolov3_keras\VOCdevkit\VOC2007\Annotations"
 files=os.listdir(path)  #得到文件夹下所有文件名称
 s=[]
 for xmlFile in files: #遍历文件夹
@@ -13,6 +13,7 @@ for xmlFile in files: #遍历文件夹
         #获取标签对name/pose之间的值
         name=root.getElementsByTagName('folder')
         pose=root.getElementsByTagName('path')
+        filename=root.getElementsByTagName('filename')
         #原始信息
         # print ('原始信息')
         n0=name[0]
@@ -20,12 +21,18 @@ for xmlFile in files: #遍历文件夹
  
         p0=pose[0]
         # print( p0.firstChild.data)
+
+        f0=filename[0]
+        # print( f0.firstChild.data)
 	
-	#修改
+	#修改folder
         n0.firstChild.data='JPEGImages'
         part=xmlFile[0:4]
         part1=part+'.jpg'
-        p0.firstChild.data='F:/AI/MaskRecognition/yolo3/yolov3_keras/VOCdevkit/VOC2007/JPEGImages/'+part1
+        #修改filename
+        f0.firstChild.data=part1
+        # 修改path
+        p0.firstChild.data='F:/AI/MaskRecognition/yolo3/mask/data/JPEGImages/'+part1
 	#打印输出
         # print('修改后的 name')
         # print( n0.firstChild.data)

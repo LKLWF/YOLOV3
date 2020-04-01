@@ -15,6 +15,7 @@ from yolo3.utils import compose
 
 
 @wraps(Conv2D)
+# 设置Darknet网络参数
 def DarknetConv2D(*args, **kwargs):
     """Wrapper to set Darknet parameters for Convolution2D."""
     darknet_conv_kwargs = {'kernel_regularizer': l2(5e-4)}
@@ -30,11 +31,12 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
         DarknetConv2D(*args, **no_bias_kwargs),
         BatchNormalization(),
         LeakyReLU(alpha=0.1))
-
+# 残差结构
 def resblock_body(x, num_filters, num_blocks):
     '''A series of resblocks starting with a downsampling Convolution2D'''
     # Darknet uses left and top padding instead of 'same' mode
     x = ZeroPadding2D(((1,0),(1,0)))(x)
+    # 进行步长为2的卷积操作
     x = DarknetConv2D_BN_Leaky(num_filters, (3,3), strides=(2,2))(x)
     for i in range(num_blocks):
         y = compose(
@@ -70,20 +72,22 @@ def make_last_layers(x, num_filters, out_filters):
 def yolo_body(inputs, num_anchors, num_classes):
     """Create YOLO_V3 model CNN body in Keras."""
     darknet = Model(inputs, darknet_body(inputs))
+    # 对输出的降维操作
+    # 13 x 13 特征图
     x, y1 = make_last_layers(darknet.output, 512, num_anchors*(num_classes+5))
-
+    # 26 x 26 特征图
     x = compose(
             DarknetConv2D_BN_Leaky(256, (1,1)),
             UpSampling2D(2))(x)
     x = Concatenate()([x,darknet.layers[152].output])
     x, y2 = make_last_layers(x, 256, num_anchors*(num_classes+5))
-
+    # 52 x 52 特征图
     x = compose(
             DarknetConv2D_BN_Leaky(128, (1,1)),
             UpSampling2D(2))(x)
     x = Concatenate()([x,darknet.layers[92].output])
     x, y3 = make_last_layers(x, 128, num_anchors*(num_classes+5))
-
+    # 输出三个大小不同的特征图
     return Model(inputs, [y1,y2,y3])
 
 def tiny_yolo_body(inputs, num_anchors, num_classes):
@@ -172,7 +176,7 @@ def yolo_correct_boxes(box_xy, box_wh, input_shape, image_shape):
     boxes *= K.concatenate([image_shape, image_shape])
     return boxes
 
-
+# 提取框和置信度
 def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape):
     '''Process Conv layer output'''
     box_xy, box_wh, box_confidence, box_class_probs = yolo_head(feats,
@@ -183,7 +187,10 @@ def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape)
     box_scores = K.reshape(box_scores, [-1, num_classes])
     return boxes, box_scores
 
-
+# anchor文件中是按从小到大排列的
+# 而model.output输出的层是 13->52
+# 而越小的特征图检测的是越大的物体
+# 也就需要越大的anchor，所以anchor_mask是倒叙排列
 def yolo_eval(yolo_outputs,
               anchors,
               num_classes,
@@ -214,14 +221,20 @@ def yolo_eval(yolo_outputs,
         # TODO: use keras backend instead of tf.
         class_boxes = tf.boolean_mask(boxes, mask[:, c])
         class_box_scores = tf.boolean_mask(box_scores[:, c], mask[:, c])
+        # 非极大抑制算法筛选标注框
         nms_index = tf.image.non_max_suppression(
-            class_boxes, class_box_scores, max_boxes_tensor, iou_threshold=iou_threshold)
+            class_boxes,
+            class_box_scores, # 每个框的得分
+            max_boxes_tensor, # 最大被选择的框的数目2
+            iou_threshold=iou_threshold # 检测的IOU阈值
+        )
         class_boxes = K.gather(class_boxes, nms_index)
         class_box_scores = K.gather(class_box_scores, nms_index)
         classes = K.ones_like(class_box_scores, 'int32') * c
         boxes_.append(class_boxes)
         scores_.append(class_box_scores)
         classes_.append(classes)
+    # 使用K.gather通过nms_index筛选合格的框和框对应得分
     boxes_ = K.concatenate(boxes_, axis=0)
     scores_ = K.concatenate(scores_, axis=0)
     classes_ = K.concatenate(classes_, axis=0)

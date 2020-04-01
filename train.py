@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+# import tensorflow as tf
 import keras.backend as K
 from keras.layers import Input, Lambda
 from keras.models import Model
@@ -28,6 +29,7 @@ def _main():
     input_shape = (416,416) # multiple of 32, hw
 
     is_tiny_version = len(anchors)==6 # default setting
+    # is_tiny_version = False
     if is_tiny_version:
         model = create_tiny_model(input_shape, anchors, num_classes,
             freeze_body=2, weights_path='model_data/yolov3-tiny.h5')
@@ -46,22 +48,22 @@ def _main():
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=3, verbose=1)
     early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1)
 
-    val_split = 0.1
+    val_split = 0.2
     with open(annotation_path) as f:
         lines = f.readlines()
     np.random.seed(10101)
     np.random.shuffle(lines)
     np.random.seed(None)
     num_val = int(len(lines)*val_split)
-    # num_train = len(lines) - num_val
-    num_train = int(len(lines)/2)
+    num_train = len(lines) - num_val
+    # num_train = int(len(lines)/2)
     #Train with frozen layers first, to get a stable loss.
     #Adjust num epochs to your dataset. This step is enough to obtain a not bad model.
     if True:
         model.compile(
             optimizer=Adam(lr=1e-3),
-            loss={'yolo_loss': lambda y_true, y_pred: y_pred} # use custom yolo_loss Lambda layer.
-            # metrics = ['accuracy',  fmeasure, recall, precision]
+            loss={'yolo_loss': lambda y_true, y_pred: y_pred}, # use custom yolo_loss Lambda layer.
+            metrics = ['accuracy', fmeasure, recall, precision]
         )
 
         batch_size = 2
@@ -70,17 +72,14 @@ def _main():
                 steps_per_epoch=max(1, num_train//batch_size),
                 validation_data=data_generator_wrapper(lines[num_train:], batch_size, input_shape, anchors, num_classes),
                 validation_steps=max(1, num_val//batch_size),
-                epochs=4,
+                epochs=10,
                 initial_epoch=0,
-                callbacks=[ checkpoint, reduce_lr, early_stopping ])
-        training_vis(hist, epochs=4)
-        # save_name = 'test1'
-        # model.save_weights(os.path.join(log_dir, save_name+'.h5'), overwrite=True)
-        # pd.DataFrame(hist.history).to_hdf(os.path.join(log_dir, 'history_'+save_name+'.h5'), key='df_')
-        
-        # model.save_weights('trained_weights_test2.h5')
-        # df_ = pd.DataFrame(hist.history)
-        # df_.to_hdf(path_or_buf = 'trained_weights_test2.h5', key='df_')
+                # epochs=2,
+                # initial_epoch=0,
+                callbacks=[ checkpoint, reduce_lr, early_stopping ]
+        )
+        model.save_weights(log_dir + 'trained_weights_stage_1.h5')
+        training_vis(hist, epochs=10)
 
     #model.load_weights("logs/ep034-loss6.105-val_loss6.205.h5")
     # Unfreeze and continue training, to fine-tune.
@@ -90,8 +89,8 @@ def _main():
             model.layers[i].trainable = True
         model.compile(
             optimizer=Adam(lr=1e-4),
-            loss={'yolo_loss': lambda y_true,y_pred: y_pred}
-            # metrics = ['accuracy',  fmeasure, recall, precision]
+            loss={'yolo_loss': lambda y_true,y_pred: y_pred},
+            metrics = ['accuracy', fmeasure, recall, precision]
         ) # recompile to apply the change
         print('Unfreeze all of the layers.')
 
@@ -101,19 +100,14 @@ def _main():
             steps_per_epoch=max(1, num_train//batch_size),
             validation_data=data_generator_wrapper(lines[num_train:], batch_size, input_shape, anchors, num_classes),
             validation_steps=max(1, num_val//batch_size),
-            epochs=10,
-            initial_epoch=4,
+            # epochs=100,
+            # initial_epoch=16,
+            epochs=20,
+            initial_epoch=10,
             callbacks=[ checkpoint, reduce_lr, early_stopping]
         )
-        training_vis(hist, epochs=10)
-        # model.save_weights('trained_weights_test1.h5')
-        # df_ = pd.DataFrame(hist.history)
-        # df_.to_hdf(path_or_buf = 'trained_weights_test1.h5', key='df_')
-
-        # save_name = 'test2'
-        # model.save_weights(os.path.join(log_dir, save_name+'.h5'), overwrite=True)
-        # pd.DataFrame(hist.history).to_hdf(os.path.join(log_dir, 'history_'+save_name+'.h5'), key='df_')
-
+        model.save_weights(log_dir + 'trained_weights_final.h5')
+        training_vis(hist, epochs=20)
     # Further training if needed.
 
 
@@ -130,7 +124,6 @@ def get_anchors(anchors_path):
         anchors = f.readline()
     anchors = [float(x) for x in anchors.split(',')]
     return np.array(anchors).reshape(-1, 2)
-
 
 def create_model(input_shape, anchors, num_classes, load_pretrained=True, freeze_body=2,
             weights_path='model_data/yolo_weights.h5'):
@@ -217,34 +210,62 @@ def data_generator_wrapper(annotation_lines, batch_size, input_shape, anchors, n
     return data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes)
 
 def precision(y_true, y_pred):
-    # Calculates the precision
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    precision = true_positives / (predicted_positives + K.epsilon())
+    # 计算精准率
+    # TP=tf.reduce_sum(y_true*tf.round(y_pred))
+    # TN=tf.reduce_sum((1-y_true)*(1-tf.round(y_pred)))
+    # FP=tf.reduce_sum((1-y_true)*tf.round(y_pred))
+    # FN=tf.reduce_sum(y_true*(1-tf.round(y_pred)))
+    # precision=TP/(TP+FP)
+
+    # true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    # predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    # precision = true_positives / (predicted_positives + K.epsilon())
+    
+    TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    N = (-1)*K.sum(K.round(K.clip(y_true-K.ones_like(y_true), -1, 0)))
+    TN=K.sum(K.round(K.clip((y_true-K.ones_like(y_true))*(y_pred-K.ones_like(y_pred)), 0, 1)))
+    FP=N-TN
+    precision = TP / (TP + FP + K.epsilon())
     return precision
 
 def recall(y_true, y_pred):
-    # Calculates the recall
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-    recall = true_positives / (possible_positives + K.epsilon())
+    # 计算召回率
+    # TP=tf.reduce_sum(y_true*tf.round(y_pred))
+    # TN=tf.reduce_sum((1-y_true)*(1-tf.round(y_pred)))
+    # FP=tf.reduce_sum((1-y_true)*tf.round(y_pred))
+    # FN=tf.reduce_sum(y_true*(1-tf.round(y_pred)))
+    # recall=TP/(TP+FN)
+    
+    # true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    # possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    # recall = true_positives / (possible_positives + K.epsilon())
+    
+    TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    P=K.sum(K.round(K.clip(y_true, 0, 1)))
+    FN = P-TP
+    recall = TP / (TP + FN + K.epsilon())
     return recall
 
 def fbeta_score(y_true, y_pred, beta=1):
-    # Calculates the F score, the weighted harmonic mean of precision and recall.
-
+    # # Calculates the F score, the weighted harmonic mean of precision and recall.
     if beta < 0:
         raise ValueError('The lowest choosable beta is zero (only precision).')
-        
     # If there are no true positives, fix the F score at 0 like sklearn.
     if K.sum(K.round(K.clip(y_true, 0, 1))) == 0:
         return 0
-
     p = precision(y_true, y_pred)
     r = recall(y_true, y_pred)
     bb = beta ** 2
     fbeta_score = (1 + bb) * (p * r) / (bb * p + r + K.epsilon())
     return fbeta_score
+    # TP=tf.reduce_sum(y_true*tf.round(y_pred))
+    # TN=tf.reduce_sum((1-y_true)*(1-tf.round(y_pred)))
+    # FP=tf.reduce_sum((1-y_true)*tf.round(y_pred))
+    # FN=tf.reduce_sum(y_true*(1-tf.round(y_pred)))
+    # precision=TP/(TP+FP)
+    # recall=TP/(TP+FN)
+    # F1score=2*precision*recall/(precision+recall)
+    # return F1score
 
 def fmeasure(y_true, y_pred):
     # Calculates the f-measure, the harmonic mean of precision and recall.
@@ -257,6 +278,7 @@ def training_vis(hist, epochs):
     max = int(history['loss'][0]) + 10
     # min = history['loss'][epochs-1]
     min = 0
+    print(history, '====================================history')
     plt.plot(history['loss'])
     # 画val_loss曲线
     plt.plot(history['val_loss'], color='blue', linewidth=5.0, linestyle='--')
@@ -273,7 +295,10 @@ def training_vis(hist, epochs):
     my_y_ticks = np.arange(0, max, int(max/10))
     plt.xticks(my_x_ticks)
     plt.yticks(my_y_ticks)
-    plt.savefig('./results/loss_val_loss.jpg')
+    if (epochs == 10):
+        plt.savefig('./results/epochs10.jpg')
+    else:
+        plt.savefig('./results/epochs20.jpg')
     #显示出所有设置
     # plt.show()
 
