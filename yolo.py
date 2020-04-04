@@ -20,9 +20,11 @@ from keras.utils import multi_gpu_model
 
 class YOLO(object):
     _defaults = {
-        "model_path": 'logs/ep034-loss6.105-val_loss6.205.h5',
-        "anchors_path": 'model_data/tiny_yolo_anchors.txt',
+        # "model_path": 'logs/ep015-loss15.148-val_loss14.037.h5',
+        "model_path": 'logs/ep034-loss6.105-val_loss6.205.h5', ##训练好的模型的路径
         "classes_path": 'model_data/voc_classes.txt',
+        "anchors_path": 'model_data/tiny_yolo_anchors.txt',
+        # "anchors_path": 'model_data/yolo_anchors.txt',
         "score" : 0.3,
         "iou" : 0.45,
         "model_image_size" : (416, 416),
@@ -103,6 +105,7 @@ class YOLO(object):
     def detect_image(self, image):
         start = timer()
 
+        # 检测：在函数letterbox_image对图像进行了等比例缩放，所以检测的时候不需要缩放为416*416
         if self.model_image_size != (None, None):
             assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'
             assert self.model_image_size[1]%32 == 0, 'Multiples of 32 required'

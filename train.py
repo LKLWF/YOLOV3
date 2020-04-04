@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 # import tensorflow as tf
+# from keras.utils import multi_gpu_model
 import keras.backend as K
 from keras.layers import Input, Lambda
 from keras.models import Model
@@ -21,14 +22,15 @@ def _main():
     annotation_path = '2007_train.txt'
     log_dir = 'logs/'
     classes_path = 'model_data/voc_classes.txt'
-    anchors_path = 'model_data/tiny_yolo_anchors.txt'
+    # anchors_path = 'model_data/tiny_yolo_anchors.txt'
+    anchors_path = 'model_data/yolo_anchors.txt'
     class_names = get_classes(classes_path)
     num_classes = len(class_names)
     anchors = get_anchors(anchors_path)
 
     input_shape = (416,416) # multiple of 32, hw
 
-    is_tiny_version = len(anchors)==6 # default setting
+    is_tiny_version = len(anchors)==6 # 6是使用yolov3-tiny.h5,9是使用yolo.h5
     # is_tiny_version = False
     if is_tiny_version:
         model = create_tiny_model(input_shape, anchors, num_classes,
@@ -36,7 +38,6 @@ def _main():
     else:
         model = create_model(input_shape, anchors, num_classes,
             freeze_body=2, weights_path='model_data/yolo.h5') # make sure you know what you freeze
-
     logging = TensorBoard(log_dir=log_dir)
     checkpoint = ModelCheckpoint(
         log_dir + 'ep{epoch:03d}-loss{loss:.3f}-val_loss{val_loss:.3f}.h5',
@@ -45,6 +46,7 @@ def _main():
         save_best_only=True, #s只保存在验证集上性能最好的模型
         period=3
     )
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=3, verbose=1)
     early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1)
 
@@ -138,7 +140,7 @@ def create_model(input_shape, anchors, num_classes, load_pretrained=True, freeze
 
     model_body = yolo_body(image_input, num_anchors//3, num_classes)
     print('Create YOLOv3 model with {} anchors and {} classes.'.format(num_anchors, num_classes))
-
+    # model_body = multi_gpu_model(model_body,gpus=2)
     if load_pretrained:
         model_body.load_weights(weights_path, by_name=True, skip_mismatch=True)
         print('Load weights {}.'.format(weights_path))
@@ -192,6 +194,7 @@ def data_generator(annotation_lines, batch_size, input_shape, anchors, num_class
     while True:
         image_data = []
         box_data = []
+        # 训练：get_random_data函数，在读取训练图像与标签数据时，也对图像和标签数据进行了等比缩放
         for b in range(batch_size):
             if i==0:
                 np.random.shuffle(annotation_lines)
@@ -292,7 +295,8 @@ def training_vis(hist, epochs):
     # plt.legend(['train', 'test'], loc='upper left')
     #设置坐标轴刻度
     my_x_ticks = np.arange(0, epochs, 1)
-    my_y_ticks = np.arange(0, max, int(max/10))
+    # my_y_ticks = np.arange(0, max, int(max/10))
+    my_y_ticks = np.arange(0, 18, 0.8)
     plt.xticks(my_x_ticks)
     plt.yticks(my_y_ticks)
     if (epochs == 10):

@@ -21,9 +21,11 @@ from keras.utils import multi_gpu_model
 
 class YOLO(object):
     _defaults = {
-        "model_path": 'logs/ep009-loss9.151-val_loss8.277.h5', ##训练好的模型的路径
+        # "model_path": 'F:/AI/MaskRecognition/yolo3/yolov3_keras/logs/ep015-loss15.148-val_loss14.037.h5', ##训练好的模型的路径
+        "model_path": 'F:/AI/MaskRecognition/yolo3/yolov3_keras/logs/ep034-loss6.105-val_loss6.205.h5', ##训练好的模型的路径
         "classes_path": 'model_data/voc_classes.txt',
         "anchors_path": 'model_data/tiny_yolo_anchors.txt',
+        # "anchors_path": 'model_data/yolo_anchors.txt',
         "score" : 0.3,
         "iou" : 0.45,
         "model_image_size" : (416, 416),
@@ -184,7 +186,7 @@ if __name__ == '__main__':
     #     r_image.show()
     # yolo.close_session()
     #strat1=timer()
-    dirname="F:\AI\MaskRecognition\yolo3\yolov3_keras\mAP\input\detection-results" ##该目录为测试照片的存储路径，每次测试照片的数量可以自己设定
+    dirname="F:/AI/MaskRecognition/yolo3/yolov3_keras/mAP/input/images-optional/" ##该目录为测试照片的存储路径，每次测试照片的数量可以自己设定
     path=os.path.join(dirname)
     pic_list=os.listdir(path) 
     count=0
