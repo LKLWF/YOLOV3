@@ -7,6 +7,8 @@ yolo3-keras的源码，可以用于训练自己的模型yolov3以及yolov3-tiny
 - **Python：** 3.7.4
 - **Tensorflow-GPU** 1.14.0
 - **Keras:** 2.2.4
+- **pydot:** 1.4.1  # 画网络结构用
+# 从 https://graphviz.gitlab.io/download/ 下载windows安装文件graphviz-2.38.msi,然后配置path
 
 ## 二、快速使用：
 
@@ -104,3 +106,21 @@ VOCdevkit
  - 1.训练时，要在yolo3文件夹下面的utils.py里，修改get_random_data()函数，有一个默认参数是max_boxes=20，改成很大的数值就行了。
 
  - 2.检测时，要在yolo3文件夹下面的model.py里，修改yolo_eval()函数，有一个默认参数是max_boxes=20，改成很大的数值就行了。
+
+ - 3.运行顺序：
+ train.py训练后的模型会存在logs文件夹里
+ 运行yolo_test.py检测模型识别准确率，识别结果存在mAP/input/pic下txt文件
+ 运行make_dr.py将上面得到的txt文件写进mAP/input/detection-results中
+ 再执行mAP里的main.py文件在output文件夹有检测结果
+ 
+## 六、文件结构：
+-VOCdevit
+	-VOC2007
+			├─ImageSets    # 存放数据集列表文件，由voc2yolo3.py文件生成
+			├─Annotations  # 存放图片标签，xml 格式
+			├─JPEGImages   # 存放数据集中图片文件
+			└─voc2yolo3.py
+-draw_network.py     # 画网络结构代码
+-results
+ -my_darknet53_yolov3.png 		 # yolov3网络结构
+ -my_darknet53_yolov3-tiny.png # yolov3-tiny网络结构
