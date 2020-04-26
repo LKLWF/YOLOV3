@@ -2,7 +2,7 @@ import sys
 import argparse
 from yolo import YOLO, detect_video
 from PIL import Image
-
+# 使用的权重文件在yolo.py中注明
 def detect_img(yolo):
     while True:
         img = input('Input image filename:')

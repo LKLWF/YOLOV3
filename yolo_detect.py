@@ -22,10 +22,10 @@ from keras.utils import multi_gpu_model
 class YOLO(object):
     _defaults = {
         # "model_path": 'F:/AI/MaskRecognition/yolo3/yolov3_keras/logs/ep015-loss15.148-val_loss14.037.h5', ##训练好的模型的路径
-        "model_path": 'F:/AI/MaskRecognition/yolo3/yolov3_keras/logs/ep034-loss6.105-val_loss6.205.h5', ##训练好的模型的路径
-        "classes_path": 'model_data/voc_classes.txt',
-        "anchors_path": 'model_data/tiny_yolo_anchors.txt',
         # "anchors_path": 'model_data/yolo_anchors.txt',
+        "model_path": 'F:/AI/MaskRecognition/yolo3/yolov3_keras/logs/ep034-loss6.105-val_loss6.205.h5', ##训练好的模型的路径
+        "anchors_path": 'model_data/tiny_yolo_anchors.txt',
+        "classes_path": 'model_data/voc_classes.txt',
         "score" : 0.3,
         "iou" : 0.45,
         "model_image_size" : (416, 416),

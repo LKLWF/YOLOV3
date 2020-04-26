@@ -4,6 +4,7 @@ import scipy
 from scipy import ndimage
 from tensorflow import keras
 import tensorflow as tf
+import cv2
 import matplotlib.pyplot as plt
 from tensorflow.keras.applications.resnet50 import ResNet50
 from tensorflow.keras.preprocessing import image
@@ -120,6 +121,8 @@ model.fit(X_train, Y_train, epochs=1, batch_size=6)
 
 
 model.evaluate(X_test, Y_test, batch_size=32)
+print('Evaluate the training model and output the accuracy and loss')
+print(model.evaluate(X_test, Y_test, batch_size=32))
 
 # # save
 
