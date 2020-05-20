@@ -6,9 +6,10 @@ from tensorflow import keras
 import tensorflow as tf
 import cv2
 import matplotlib.pyplot as plt
-from tensorflow.keras.applications.resnet50 import ResNet50
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
+from keras.applications.vgg16 import VGG16
+from keras.preprocessing import image
+from keras.applications.vgg16 import preprocess_input
+from keras.optimizers import SGD
 from PIL import Image
 import random
 
@@ -96,17 +97,23 @@ print('Y_test shape : ',Y_test.shape)
 # # model
 
 
-model = ResNet50(
-    weights=None,
-    classes=2
+model = VGG16(
+    weights='imagenet',
+    classes=1000
 )
+# model1 = keras.applications.vgg16.VGG16(include_top=True, weights='imagenet',
+#                                 input_tensor=None, input_shape=None,
+#                                 pooling=None,
+#                                 classes=1000)
 
 
-# model.compile(optimizer=tf.train.AdamOptimizer(0.001),
-#     loss='categorical_crossentropy',
-#     metrics=['accuracy'])
-optimizer = keras.optimizers.Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-model.compile(optimizer = optimizer,
+# optimizer = keras.optimizers.Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+# model.compile(optimizer = optimizer,
+#     loss = keras.losses.categorical_crossentropy,
+#     metrics=['accuracy'] )
+
+sgd = SGD(lr=0.0001, decay=0.0, momentum=0.9, nesterov=True)
+model.compile(optimizer=sgd,
     loss = keras.losses.categorical_crossentropy,
     metrics=['accuracy'] )
 
@@ -127,10 +134,10 @@ print(model.evaluate(X_test, Y_test, batch_size=32))
 # # save
 
 
-model.save('Resnet/my_resnet_model.h5')
+model.save('./my_vgg16_model.h5')
 
 # # restore
 
 
-model = tf.keras.models.load_model('Resnet/my_resnet_model.h5', compile=False)
-print('model saved ============')
+model = tf.keras.models.load_model('./my_vgg16_model.h5', compile=False)
+print('model saved============')

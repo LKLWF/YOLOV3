@@ -1,37 +1,3 @@
-# import os,sys
-# import numpy as np
-# import scipy
-# from scipy import ndimage
-# from tensorflow import keras
-# import tensorflow as tf
-# import cv2
-# import matplotlib.pyplot as plt
-# from tensorflow.keras.applications.resnet50 import ResNet50
-# from tensorflow.keras.preprocessing import image
-# from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
-# from PIL import Image
-# import random
-
-# model = tf.keras.models.load_model('Resnet/my_resnet_model.h5', compile=False)
-# print('model saved============')
-
-# # # test
-
-
-# img_path = "F:/AI/MaskRecognition/yolo3/dataSet/dataset with label/test/have_mask/0185.jpg"
-
-# img_path = "F:/AI/MaskRecognition/yolo3/dataSet/dataset with label/test/no_mask/0185.jpg"
-
-# img = image.load_img(img_path, target_size=(224, 224))
-
-# plt.imshow(img)
-# img = image.img_to_array(img)/ 255.0
-# img = np.expand_dims(img, axis=0)  # 为batch添加第四维
-# print('hahhahahha======')
-# print(model.predict(img))
-# np.argmax(model.predict(img))
-
-
 # 处理标注框
 """
 在很多图像识别的数据集中，图像中需要关注的物体通常会呗标注框圈出来，tsnroflow提供了一些工具来处理标注框。下面这段代
@@ -63,16 +29,26 @@ with tf.Session() as sess:
         tf.image.convert_image_dtype(image_data, tf.float32), 0
     )
     # 给出每一张图像的所有标注框。一个标注框有四个数字，分别代表[ Ymin,Xmin,Ymax,Xmax]
-    # have_mask 0.83 518 166 592 235
-    # have_mask 0.90 771 194 860 320
-    # have_mask 0.92 157 126 236 215
-    # have_mask 0.94 316 96 390 211
-    # have_mask 0.99 593 149 670 228
-    # have_mask 0.99 423 150 480 222
-    # have_mask 0.99 44 148 110 227
     boxes = tf.constant([[[0.125, 0.125, 0.75, 0.75], [0.375, 0.375, 0.75, 0.75]]])
     result = tf.image.draw_bounding_boxes(batched, boxes)
     result = tf.reduce_sum(result, 0)  # 这里显示的时候需要进行降维处理
     plt.imshow(result.eval())
     plt.show()
 
+# 用opencv画标注框
+def draw_box() :
+    import cv2
+    import numpy as np
+    image = "F:/AI/MaskRecognition/yolo3/dataSet/dataset with label/test/no_mask/0185.jpg"
+    img = cv2.imread(image)
+    x0, y0, x1, y1 = [300, 300, 500, 500]
+    # rectangle参数说明：图片，(边框左上角坐标)，(边框右下角坐标)，边框颜色，边框厚度
+    cv2.rectangle(img,(int(x0),int(y0)),(int(x1),int(y1)),(0,255,0),3)
+    # putText参数说明：图片，添加的文字，左上角坐标，字体，字体大小，颜色，字体粗细
+    result = np.asarray(img)
+    cv2.putText(result, 'mask', (500, 500), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                        fontScale=0.50, color=(255, 0, 0), thickness=2)
+    cv2.imshow('result', result)
+    cv2.waitKey(0) # 解决图片一闪而过
+    # 保存图片
+    cv2.imwrite('1.png',result,[int(cv2.IMWRITE_PNG_COMPRESSION),9])

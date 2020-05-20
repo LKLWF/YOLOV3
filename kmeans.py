@@ -91,8 +91,7 @@ class YOLO_Kmeans:
         result = result[np.lexsort(result.T[0, None])]
         self.result2txt(result)
         print("K anchors:\n {}".format(result))
-        print("Accuracy: {:.2f}%".format(
-            self.avg_iou(all_boxes, result) * 100))
+        print("Accuracy: {:.2f}%".format(self.avg_iou(all_boxes, result) * 100))
 
 
 if __name__ == "__main__":

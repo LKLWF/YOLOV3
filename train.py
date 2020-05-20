@@ -6,7 +6,8 @@ import numpy as np
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
-# import tensorflow as tf
+from tensorflow import keras
+import tensorflow as tf
 # from keras.utils import multi_gpu_model
 import keras.backend as K
 from keras.layers import Input, Lambda
@@ -22,8 +23,8 @@ def _main():
     annotation_path = '2007_train.txt'
     log_dir = 'logs/'
     classes_path = 'model_data/voc_classes.txt'
-    # anchors_path = 'model_data/tiny_yolo_anchors.txt'
-    anchors_path = 'model_data/yolo_anchors.txt'
+    anchors_path = 'model_data/tiny_yolo_anchors.txt'
+    # anchors_path = 'model_data/yolo_anchors.txt'
     class_names = get_classes(classes_path)
     num_classes = len(class_names)
     anchors = get_anchors(anchors_path)
@@ -36,8 +37,7 @@ def _main():
         model = create_tiny_model(input_shape, anchors, num_classes,
             freeze_body=2, weights_path='model_data/yolov3-tiny.h5')
     else:
-        model = create_model(input_shape, anchors, num_classes,
-            freeze_body=2, weights_path='model_data/yolo.h5') # make sure you know what you freeze
+        model = create_model(input_shape, anchors, num_classes, freeze_body=2, weights_path='model_data/yolo.h5') # make sure you know what you freeze
     logging = TensorBoard(log_dir=log_dir)
     checkpoint = ModelCheckpoint(
         log_dir + 'ep{epoch:03d}-loss{loss:.3f}-val_loss{val_loss:.3f}.h5',
@@ -78,7 +78,8 @@ def _main():
                 initial_epoch=0,
                 # epochs=2,
                 # initial_epoch=0,
-                callbacks=[ checkpoint, reduce_lr, early_stopping ]
+                callbacks=[ logging, checkpoint, reduce_lr, early_stopping ]
+                # callbacks=[ logging, checkpoint ]
         )
         model.save_weights(log_dir + 'trained_weights_stage_1.h5')
         training_vis(hist, epochs=10)
@@ -106,9 +107,10 @@ def _main():
             # initial_epoch=16,
             epochs=20,
             initial_epoch=10,
-            callbacks=[ checkpoint, reduce_lr, early_stopping]
+            callbacks=[ logging, checkpoint, reduce_lr, early_stopping ]
+            # callbacks=[ logging, checkpoint]
         )
-        model.save_weights(log_dir + 'trained_weights_final.h5')
+        # model.save_weights(log_dir + 'trained_weights_final.h5')
         training_vis(hist, epochs=20)
     # Further training if needed.
 
@@ -287,12 +289,12 @@ def training_vis(hist, epochs):
     plt.plot(history['val_loss'], color='blue', linewidth=5.0, linestyle='--')
     plt.title('model loss')
     # 坐标轴范围
-    # plt.xlim((0,6))
-    # plt.ylim((500, 4000))
+    plt.xlim((0,6))
+    plt.ylim((10, 500))
     # 坐标轴名称
     plt.ylabel('loss')
     plt.xlabel('epoch')
-    # plt.legend(['train', 'test'], loc='upper left')
+    plt.legend(['val_loss', 'loss'], loc='upper left')
     #设置坐标轴刻度
     my_x_ticks = np.arange(0, epochs, 1)
     # my_y_ticks = np.arange(0, max, int(max/10))
