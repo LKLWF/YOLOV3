@@ -112,6 +112,8 @@ VOCdevkit
  运行yolo_test.py检测模型识别准确率，识别结果存在mAP/input/pic下txt文件
  运行make_dr.py将上面得到的txt文件写进mAP/input/detection-results中
  再执行mAP里的main.py文件在output文件夹有检测结果
+
+ - 4.怎么画出model_loss图
  
 ## 六、文件结构：
 -VOCdevit
